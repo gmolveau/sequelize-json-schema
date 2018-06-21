@@ -2,18 +2,12 @@
 
 let Sequelize = require('sequelize');
 
-let enumProperty = attribute => {
-    return {
-      enum: attribute.values
-    }
-}
-
 let property = (attribute, options) => {
   let type = attribute.type;
 
   let addNull = attribute.allowNull && options.allowNull
 
-  if (type instanceof Sequelize.ENUM) return enumProperty(attribute);
+  if (type instanceof Sequelize.ENUM) return { enum: attribute.values };
   if (type instanceof Sequelize.BOOLEAN) return { type: addNull ? ['boolean', 'null'] : 'boolean' };
   if (type instanceof Sequelize.INTEGER) return { type: addNull ? ['integer', 'null'] : 'integer', format: 'int32' };
   if (type instanceof Sequelize.BIGINT) return { type: addNull ? ['integer', 'null'] : 'integer', format: 'int64' };
@@ -98,6 +92,7 @@ module.exports = (model, options) => {
   options = options || {};
 
   const schema = {
+    name: '' + model.name,
     type: 'object',
     properties: {},
     required: []
